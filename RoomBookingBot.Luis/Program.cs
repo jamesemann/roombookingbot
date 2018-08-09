@@ -1,5 +1,5 @@
 ﻿using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
-using RoomBookingBot.Luis.Extensions;
+using RoomBookingBot.Luis.Model;
 using System;
 using System.Threading.Tasks;
 
@@ -7,8 +7,8 @@ namespace RoomBookingBot.Luis
 {
     class Program
     {
-        private readonly static string apiKey = "<ADD YOUR LUIS KEY>";
-        private readonly static string modelId = "<ADD YOUR LUIS MODEL ID>";
+        private readonly static string apiKey = "";
+        private readonly static string modelId = "";
 
 
         public async static Task Main(string[] args)
