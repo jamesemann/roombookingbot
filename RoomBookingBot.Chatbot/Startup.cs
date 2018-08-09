@@ -5,6 +5,8 @@ using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RoomBookingBot.Chatbot.Bots;
+using RoomBookingBot.Chatbot.Middleware;
 using System.Collections.Generic;
 
 namespace RoomBookingBot.Chatbot
@@ -22,16 +24,13 @@ namespace RoomBookingBot.Chatbot
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var configurationBuilder = new ConfigurationBuilder()
-                .SetBasePath(Env.ContentRootPath)
-                .AddJsonFile("appsettings.json");
-
-            var configuration = configurationBuilder
-                .Build();
+            services.AddSingleton(Configuration);
 
             services.AddBot<Bot>((options) => {
-                options.CredentialProvider = new ConfigurationCredentialProvider(configuration);
+                options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
+                options.Middleware.Add(new TypingMiddleware());
                 options.Middleware.Add(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
+                options.Middleware.Add(new SpellCheckMiddleware(Configuration));
             });
 
             services.AddMvc();

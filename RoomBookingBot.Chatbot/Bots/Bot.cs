@@ -1,28 +1,28 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Bot;
+﻿using Microsoft.Bot;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using RoomBookingBot.Chatbot.Dialogs;
+using RoomBookingBot.Chatbot.Extensions;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace RoomBookingBot.Chatbot
+namespace RoomBookingBot.Chatbot.Bots
 {
     public class Bot : IBot
     {
         private readonly DialogSet dialogs;
 
-        public Bot()
+        public Bot(IConfiguration configuration)
         {
-            // compose dialogs
             dialogs = new DialogSet();
-            dialogs.Add("mainDialog", MainDialog.Instance);
+            dialogs.Add("mainDialog", MainDialog.GetInstance(configuration));
         }
 
         public async Task OnTurn(ITurnContext turnContext)
         {
-            if (turnContext.Activity.Type == ActivityTypes.Message)
+            if (turnContext.Activity.UserHasJustJoinedConversation() || turnContext.Activity.UserHasJustSentMessage())
             {
                 var state = turnContext.GetConversationState<Dictionary<string, object>>();
                 var dialogCtx = dialogs.CreateContext(turnContext, state);

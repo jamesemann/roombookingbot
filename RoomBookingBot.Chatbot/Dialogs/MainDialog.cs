@@ -1,44 +1,41 @@
 ﻿using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Prompts.Choices;
+using Microsoft.Extensions.Configuration;
 using RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability;
-using RoomBookingBot.Luis.Extensions;
+using RoomBookingBot.Chatbot.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RoomBookingBot.Chatbot.Dialogs
 {
     public class MainDialog : DialogContainer
     {
-        private MainDialog() : base(Id)
+        private MainDialog(IConfiguration configuration) : base(Id)
         {
+            LuisModelId = configuration.GetValue<string>("LuisModelId");
+            LuisModelKey = configuration.GetValue<string>("LuisModelKey");
+            LuisEndpoint = configuration.GetValue<string>("LuisEndpoint");
+
             Dialogs.Add(DialogId, new WaterfallStep[]
                 {
                     async (dc, args, next) =>
                     {
                         await dc.Prompt("textPrompt", $"How can I help?");
                     },
-
                     async (dc, args, next) =>
                     {
                         var utterance = args["Value"] as string;
 
-                        // ask LUIS
-                        string apiKey = "";
-                        string modelId = "";
-                        var cli = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(apiKey))
+                        var cli = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(LuisModelKey))
                         {
-                            BaseUri = new Uri("https://westus.api.cognitive.microsoft.com/luis/v2.0")
+                            BaseUri = new Uri(LuisEndpoint)
                         };
-                        var prediction = await cli.Prediction.ResolveWithHttpMessagesAsync(modelId, utterance);
+                        var prediction = await cli.Prediction.ResolveWithHttpMessagesAsync(LuisModelId, utterance);
+
                         if (prediction.Body.TopScoringIntent.Intent == "check-room-availability")
                         {
                             var bookingRequest = prediction.Body.ParseLuisBookingRequest();
-                            await dc.Context.SendActivity($"check-room-availability: {bookingRequest}");
-                            var checkRoomAvailabilityDialogArgs = new Dictionary<string,object>();
-                            checkRoomAvailabilityDialogArgs.Add("bookingRequest", bookingRequest);
+                            var checkRoomAvailabilityDialogArgs = new Dictionary<string,object>{{"bookingRequest", bookingRequest}};
                             await dc.Begin(CheckRoomAvailabilityDialog.Id, checkRoomAvailabilityDialogArgs);
                         }
                         else if (prediction.Body.TopScoringIntent.Intent == "discover-rooms")
@@ -49,7 +46,6 @@ namespace RoomBookingBot.Chatbot.Dialogs
                         {
                             await dc.Context.SendActivity($"unknown");
                         }
-
                     },
                     async (dc, args, next) =>
                     {
@@ -58,17 +54,25 @@ namespace RoomBookingBot.Chatbot.Dialogs
                 }
             );
 
-            // add the child dialogs and prompts
-            //Dialogs.Add(MakePaymentDialog.Id, MakePaymentDialog.Instance);
-            //Dialogs.Add(CheckBalanceDialog.Id, CheckBalanceDialog.Instance);
             Dialogs.Add(CheckRoomAvailabilityDialog.Id, CheckRoomAvailabilityDialog.Instance);
-            
             Dialogs.Add("textPrompt", new TextPrompt());
-            //Dialogs.Add("choicePrompt", new ChoicePrompt("en"));
         }
 
         public static string Id => "mainDialog";
 
-        public static MainDialog Instance { get; } = new MainDialog();
+        private static MainDialog instance { get; set; }
+
+        public static MainDialog GetInstance(IConfiguration configuration)
+        {
+            if (instance == null)
+            {
+                instance = new MainDialog(configuration);
+            }
+            return instance;
+        }
+        
+        public string LuisModelId { get; }
+        public string LuisModelKey { get; }
+        public string LuisEndpoint { get; }
     }
 }
