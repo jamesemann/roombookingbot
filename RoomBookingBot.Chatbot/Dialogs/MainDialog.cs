@@ -20,7 +20,17 @@ namespace RoomBookingBot.Chatbot.Dialogs
                 {
                     async (dc, args, next) =>
                     {
-                        await dc.Prompt("textPrompt", $"How can I help?");
+                        var botHasAlreadyIntroducedSelf = dc.ActiveDialog.State.ContainsKey("introduced") && (bool)dc.ActiveDialog.State["introduced"];
+
+                        if (!botHasAlreadyIntroducedSelf)
+                        {
+                            dc.ActiveDialog.State["introduced"] = true;
+                            await dc.Prompt("textPrompt", $"How can I help?");
+                        }
+                        else
+                        {
+                            await dc.Continue();
+                        }
                     },
                     async (dc, args, next) =>
                     {

@@ -5,7 +5,9 @@ namespace RoomBookingBot.Chatbot.Model
     public class BookingRequest
     {
         public DateTime? Start { get; set; }
+        public bool StartContainsTimePart { get; set; }
         public DateTime? End { get; set; }
+        public bool EndContainsTimePart { get; set; }
         public string Room { get; set; }
 
         public override string ToString()
