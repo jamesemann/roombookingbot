@@ -17,6 +17,8 @@ namespace RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability
                 async (dc, args, next) => {
                     var bookingRequest = args["bookingRequest"] as BookingRequest;
                     dc.ActiveDialog.State["bookingRequest"] = bookingRequest;
+
+                    // dialog has to either Continue, Prompt, or End, Begin, EndAll, Replace
                     await dc.Continue();
                 },
                 async (dc, args, next) => {

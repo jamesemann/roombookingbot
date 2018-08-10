@@ -59,7 +59,7 @@ namespace RoomBookingBot.Chatbot.Dialogs
                     },
                     async (dc, args, next) =>
                     {
-                        await dc.Replace(Id);
+                        await dc.Replace(Id, dc.ActiveDialog.State);
                     }
                 }
             );

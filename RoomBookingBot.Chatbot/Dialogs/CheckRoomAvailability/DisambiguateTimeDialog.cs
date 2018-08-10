@@ -19,8 +19,11 @@ namespace RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability
                     }
                     else
                     {
-                        await dc.Prompt("dateTimePrompt", (args != null && args.ContainsKey("message") ? (string)args["message"] : "What time?"));
+                        await dc.Continue();
                     }
+                },
+                async(dc,args, next) =>{
+                    await dc.Prompt("dateTimePrompt","What time?");
                 },
                 async (dc, args, next) =>
                 {
