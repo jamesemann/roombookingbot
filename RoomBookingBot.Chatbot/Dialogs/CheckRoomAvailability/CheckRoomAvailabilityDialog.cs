@@ -17,8 +17,6 @@ namespace RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability
                 async (dc, args, next) => {
                     var bookingRequest = args["bookingRequest"] as BookingRequest;
                     dc.ActiveDialog.State["bookingRequest"] = bookingRequest;
-
-                    // dialog has to either Continue, Prompt, or End, Begin, EndAll, Replace
                     await dc.Continue();
                 },
                 async (dc, args, next) => {
@@ -74,7 +72,7 @@ namespace RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability
                     if (!bookingRequest.End.HasValue)
                     {
                         var dateTime = (args["Resolution"] as List<DateTimeResolution>).ToDateTime().parsedDate;
-                        if (dateTime > System.DateTime.MinValue)
+                        if (dateTime > DateTime.MinValue)
                         {
                             bookingRequest.End = dateTime;
                         }
@@ -84,7 +82,11 @@ namespace RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability
                             bookingRequest.End = bookingRequest.Start + duration;
                         }
                     }
-                    await dc.Context.SendActivity($"done {bookingRequest}");
+
+                    var confirmation = dc.Context.Activity.CreateReply();
+                    confirmation.AddAdaptiveCardRoomConfirmationAttachment(bookingRequest.Room, bookingRequest.Start.Value.ToString("dd MMMM"), $"{bookingRequest.Start.Value.ToString("hh:mm tt")} - {bookingRequest.End.Value.ToString("hh:mm tt")} ({(bookingRequest.End.Value-bookingRequest.Start.Value).TotalMinutes} minutes)", "James Mann");
+                    await dc.Context.SendActivity(confirmation);
+                    //await dc.Context.SendActivity($"done {bookingRequest}");
                 }
             });
 

@@ -1,0 +1,87 @@
+﻿{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "Appointment Confirmation",
+          "weight": "bolder",
+          "size": "medium"
+        },
+        {
+          "type": "ColumnSet",
+          "columns": [
+
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "$(room)",
+                  "weight": "bolder",
+                  "wrap": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "Your meeting space is now reserved!",
+          "wrap": true
+        },
+        {
+          "type": "FactSet",
+          "facts": [
+            {
+              "title": "Date:",
+              "value": "$(date)"
+            },
+            {
+              "title": "Time:",
+              "value": "$(time)"
+            },
+            {
+              "title": "Attendees:",
+              "value": "$(attendees)"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+  ,
+  "actions": [
+    {
+      "type": "Action.ShowCard",
+      "title": "Add a note",
+      "card": {
+        "type": "AdaptiveCard",
+        "body": [
+          {
+            "type": "Input.Text",
+            "id": "comment",
+            "isMultiline": true,
+            "placeholder": "Enter your comment"
+          }
+        ],
+        "actions": [
+          {
+            "type": "Action.Submit",
+            "title": "OK"
+          }
+        ]
+      }
+    }
+  ]
+}
