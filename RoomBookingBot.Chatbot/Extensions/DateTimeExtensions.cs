@@ -12,7 +12,7 @@ namespace RoomBookingBot.Chatbot.Extensions
         public static (DateTime parsedDate, bool containsTimePart) ToDateTime(this List<DateTimeResolution> dateTimeResolutions)
         {
             var dateOnlyRegex = new Regex("^[0-9]{4}-[0-9]{2}-[0-9]{2}$");
-            var value = (dateTimeResolutions).FirstOrDefault().Value;
+            var value = (dateTimeResolutions).Select(x=>x.Value).FirstOrDefault(x=>DateTime.Parse(x) > DateTime.Now);
             DateTime.TryParse(value, out DateTime result);
             return (result, !dateOnlyRegex.IsMatch(value));
         }

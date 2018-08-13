@@ -66,6 +66,7 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
                 async (dc, args, next) =>
                 {
                     var bookingRequest = dc.ActiveDialog.State["bookingRequest"] as BookingRequest;
+                    // TODO rewrite to use custom dialog
                     await (!bookingRequest.Start.HasValue ? dc.Prompt("dateTimePrompt", "When would you like your meeting?") : dc.Continue());
                 },
                 async (dc, args, next) =>
@@ -149,7 +150,7 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
                     }
                     }
 
-                    
+
                     await dc.Prompt("choice", "Which one would you like", new ChoicePromptOptions
                     {
                         Choices = bookingChoices

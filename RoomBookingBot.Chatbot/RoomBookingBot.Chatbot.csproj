@@ -11,11 +11,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="JamesMann.BotFramework.Middleware" Version="1.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="1.0.0" />
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.SpellCheck" Version="3.0.0" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.0.1-preview" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.0.1-preview" />
+    <PackageReference Include="Microsoft.Graph" Version="1.10.0" />
+    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.0.10" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DataTypes.TimexExpression" Version="1.0.10" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.0.10" />
   </ItemGroup>
 
   <ItemGroup>
