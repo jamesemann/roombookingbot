@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot;
+﻿using JamesMann.BotFramework.Middleware.Extensions;
+using Microsoft.Bot;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Dialogs;
@@ -30,7 +31,10 @@ namespace RoomBookingBot.Chatbot.Bots
                 await dialogCtx.Continue();
                 if (!turnContext.Responded)
                 {
-                    await dialogCtx.Begin("mainDialog");
+                    await dialogCtx.Begin("mainDialog", new Dictionary<string, object>
+                    {
+                        ["Value"] = turnContext.Activity.Text
+                    });
                 }
             }
         }

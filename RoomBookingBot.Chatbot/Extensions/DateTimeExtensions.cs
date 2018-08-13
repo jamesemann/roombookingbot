@@ -17,6 +17,11 @@ namespace RoomBookingBot.Chatbot.Extensions
             return (result, !dateOnlyRegex.IsMatch(value));
         }
 
+        public static string ToTimex(this List<DateTimeResolution> dateTimeResolutions)
+        {
+            return (dateTimeResolutions).FirstOrDefault().Timex;
+        }
+
         public static TimeSpan ToTimeSpan(this List<DateTimeResolution> dateTimeResolutions)
         {
             var result = TimeSpan.FromSeconds(double.Parse((dateTimeResolutions).FirstOrDefault().Value));

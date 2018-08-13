@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using JamesMann.BotFramework.Middleware;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Core.Extensions;
@@ -6,7 +7,6 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RoomBookingBot.Chatbot.Bots;
-using RoomBookingBot.Chatbot.Middleware;
 using System.Collections.Generic;
 
 namespace RoomBookingBot.Chatbot
@@ -25,10 +25,14 @@ namespace RoomBookingBot.Chatbot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(Configuration);
-
+            var stateManager = new DiskAuthTokenStorage();
+            services.AddSingleton<IAuthTokenStorage>(stateManager);
+            
             services.AddBot<Bot>((options) => {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
+                
                 options.Middleware.Add(new TypingMiddleware());
+                options.Middleware.Add(new AzureAdAuthMiddleware(stateManager, Configuration));
                 options.Middleware.Add(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));
                 options.Middleware.Add(new SpellCheckMiddleware(Configuration));
             });

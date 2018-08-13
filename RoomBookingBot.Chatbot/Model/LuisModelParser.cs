@@ -14,18 +14,14 @@ namespace RoomBookingBot.Chatbot.Model
                 if (entity.Type == "builtin.datetimeV2.date")
                 {
                     result.Start = entity.ProcessDateTimeV2Date();
-                    result.StartContainsTimePart = true;
                 }
                 if (entity.Type == "builtin.datetimeV2.datetimerange")
                 {
-                    (result.Start, result.End) = entity.ProcessDateTimeV2DateTimeRange();
-                    result.StartContainsTimePart = true;
-                    result.EndContainsTimePart = true;
+                    (result.Start, result.MeetingDuration) = entity.ProcessDateTimeV2DateTimeRange();
                 }
                 else if (entity.Type == "builtin.datetimeV2.datetime")
                 {
                     result.Start = entity.ProcessDateTimeV2DateTime();
-                    result.StartContainsTimePart = true;
                 }
                 else if (entity.Type == "Room")
                 {

@@ -1,14 +1,21 @@
-﻿using System;
+﻿using Microsoft.Graph;
+using System;
 
 namespace RoomBookingBot.Chatbot.Model
 {
     public class BookingRequest
     {
         public DateTime? Start { get; set; }
-        public bool StartContainsTimePart { get; set; }
-        public DateTime? End { get; set; }
-        public bool EndContainsTimePart { get; set; }
+        //public DateTime? End { get; set; }
         public string Room { get; set; }
+
+        public bool RequestedStartTimeIsValid()
+        {
+            return Start.HasValue && Start.Value.TimeOfDay.Hours >= 9;
+        }
+        public string MeetingDuration { get; internal set; }
+
+        public Person[] AvailableRooms { get; set; }
 
         public override string ToString()
         {
@@ -17,9 +24,9 @@ namespace RoomBookingBot.Chatbot.Model
             {
                 result += $"from: {Start.Value} ";
             }
-            if (End.HasValue)
+            if (!string.IsNullOrWhiteSpace(MeetingDuration))
             {
-                result += $"to: {End.Value} ";
+                result += $"to: {MeetingDuration} ";
             }
             if (!string.IsNullOrEmpty(Room))
             {

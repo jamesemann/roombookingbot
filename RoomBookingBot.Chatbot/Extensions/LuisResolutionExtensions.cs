@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 
 namespace RoomBookingBot.Luis.Extensions
 {
@@ -58,7 +59,7 @@ namespace RoomBookingBot.Luis.Extensions
             throw new Exception("ProcessDateTimeV2DateTime");
         }
 
-        public static (DateTime start, DateTime end) ProcessDateTimeV2DateTimeRange(this EntityModel entity)
+        public static (DateTime start, string timespan) ProcessDateTimeV2DateTimeRange(this EntityModel entity)
         {
             if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
             {
@@ -69,10 +70,10 @@ namespace RoomBookingBot.Luis.Extensions
                 {
                     // assume the date is in the next 7 days and falls between 7 AM - 7 PM is the most appropriate date 
                     var bestGuess = datetimeranges.Single(dateTimeRange => dateTimeRange.start.Hour > 7 && dateTimeRange.start.Hour <= 19 && dateTimeRange.start > DateTime.Now && (DateTime.Now - dateTimeRange.start).Days <= 7);
-                    return (bestGuess.start, bestGuess.end);
+                    return (bestGuess.start, XmlConvert.ToString(bestGuess.end - bestGuess.start));
                 }
 
-                return (datetimeranges.FirstOrDefault().start, datetimeranges.FirstOrDefault().end);
+                return (datetimeranges.FirstOrDefault().start, XmlConvert.ToString(datetimeranges.FirstOrDefault().end - datetimeranges.FirstOrDefault().start));
             }
 
             throw new Exception("ProcessDateTimeV2DateTimeRange");

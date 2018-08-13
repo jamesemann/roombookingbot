@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
+using RoomBookingBot.Chatbot.Bots.Dialogs;
 using RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability;
 using RoomBookingBot.Chatbot.Model;
 using System;
@@ -20,21 +21,27 @@ namespace RoomBookingBot.Chatbot.Dialogs
                 {
                     async (dc, args, next) =>
                     {
-                        var botHasAlreadyIntroducedSelf = dc.ActiveDialog.State.ContainsKey("introduced") && (bool)dc.ActiveDialog.State["introduced"];
+                        var dialogInput = args["Value"] as string;
 
-                        if (!botHasAlreadyIntroducedSelf)
+                        if (string.IsNullOrEmpty(dialogInput))
                         {
                             dc.ActiveDialog.State["introduced"] = true;
                             await dc.Prompt("textPrompt", $"How can I help?");
                         }
+                        else if (dialogInput == "Completed")
+                        {
+                            await dc.Prompt("textPrompt", $"Your meeting is booked, let me know if I can help with anything else");
+                        }
                         else
                         {
+                            dc.ActiveDialog.State["utterance"] = dialogInput;
                             await dc.Continue();
                         }
                     },
                     async (dc, args, next) =>
                     {
-                        var utterance = args["Value"] as string;
+                        // the utterance could come from either 1) response to prompt in (args["Value"]) or 2) passed into dialog (dc.ActiveDialog.State["utterance"])
+                        var utterance = args != null && args.ContainsKey("Value") ? (string)args["Value"] : (string)dc.ActiveDialog.State["utterance"];
 
                         var cli = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(LuisModelKey))
                         {
@@ -48,17 +55,15 @@ namespace RoomBookingBot.Chatbot.Dialogs
                             var checkRoomAvailabilityDialogArgs = new Dictionary<string,object>{{"bookingRequest", bookingRequest}};
                             await dc.Begin(CheckRoomAvailabilityDialog.Id, checkRoomAvailabilityDialogArgs);
                         }
-                        else if (prediction.Body.TopScoringIntent.Intent == "discover-rooms")
-                        {
-                            await dc.Context.SendActivity($"discover-rooms");
-                        }
+                        // this is where we could detect other intents, like discover room, show room calendar, etc
                         else
                         {
-                            await dc.Context.SendActivity($"unknown");
+                            await dc.Context.SendActivity($"Sorry, I don't know what you mean");
                         }
                     },
                     async (dc, args, next) =>
                     {
+                        dc.ActiveDialog.State["Value"] = "Completed";
                         await dc.Replace(Id, dc.ActiveDialog.State);
                     }
                 }
