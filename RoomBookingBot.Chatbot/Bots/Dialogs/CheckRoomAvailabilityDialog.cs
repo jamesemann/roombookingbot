@@ -67,14 +67,14 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
                 {
                     var bookingRequest = dc.ActiveDialog.State["bookingRequest"] as BookingRequest;
                     // TODO rewrite to use custom dialog
-                    await (!bookingRequest.Start.HasValue ? dc.Prompt("dateTimePrompt", "When would you like your meeting?") : dc.Continue());
+                    await (!bookingRequest.Start.HasValue ? dc.Begin(DisambiguateDateDialog.Id) : dc.Continue());
                 },
                 async (dc, args, next) =>
                 {
                     var bookingRequest = dc.ActiveDialog.State["bookingRequest"] as BookingRequest;
                     if (!bookingRequest.Start.HasValue)
                     {
-                        (bookingRequest.Start, _) = (args["Resolution"] as List<DateTimeResult.DateTimeResolution>).ToDateTime();
+                        bookingRequest.Start = (DateTime) args["date"];
                     }
 
                     await dc.Continue();
@@ -180,6 +180,8 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
             Dialogs.Add("choice", new ChoicePrompt(Culture.English));
 
             Dialogs.Add(DisambiguateTimeDialog.Id, DisambiguateTimeDialog.Instance);
+
+            Dialogs.Add(DisambiguateDateDialog.Id, DisambiguateDateDialog.Instance);
         }
 
         public static string Id => "checkRoomAvailabilityDialog";

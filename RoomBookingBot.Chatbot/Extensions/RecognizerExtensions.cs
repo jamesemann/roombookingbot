@@ -25,11 +25,29 @@ namespace RoomBookingBot.Chatbot.Extensions
                         }
                         else if (possibleTime.ContainsKey("type") && possibleTime["type"] == "datetime")
                         {
-                            result.Add(new Resolution() { ResolutionType = Resolution.ResolutionTypes.DateTime, Date1 = DateTime.Parse(possibleTime["value"]) });
+                            var date1 = DateTime.Parse(possibleTime["value"]);
+                            if (date1 > DateTime.Now)
+                            {
+                                result.Add(new Resolution() { ResolutionType = Resolution.ResolutionTypes.DateTime, Date1 = date1 });
+                            }
+                        }
+                        else if (possibleTime.ContainsKey("type") && possibleTime["type"] == "date")
+                        {
+                            var date1 = DateTime.Parse(possibleTime["value"]);
+                            if (date1 > DateTime.Now)
+                            {
+                                result.Add(new Resolution() { ResolutionType = Resolution.ResolutionTypes.DateTime, Date1 = date1 });
+                            }
                         }
                         else if (possibleTime.ContainsKey("type") && possibleTime["type"] == "datetimerange")
                         {
-                            result.Add(new Resolution() { ResolutionType = Resolution.ResolutionTypes.DateTimeRange, Date1 = DateTime.Parse(possibleTime["start"]), Date2 = DateTime.Parse(possibleTime["end"]) });
+                            var date1 = DateTime.Parse(possibleTime["start"]);
+                            var date2 = DateTime.Parse(possibleTime["end"]);
+
+                            if (date1 > DateTime.Now && date2 > DateTime.Now)
+                            {
+                                result.Add(new Resolution() { ResolutionType = Resolution.ResolutionTypes.DateTimeRange, Date1 = DateTime.Parse(possibleTime["start"]), Date2 = DateTime.Parse(possibleTime["end"]) });
+                            }
                         }
                         else if (possibleTime.ContainsKey("type") && possibleTime["type"] == "timerange")
                         {
