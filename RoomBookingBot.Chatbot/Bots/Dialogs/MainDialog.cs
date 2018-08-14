@@ -1,13 +1,12 @@
-﻿using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
-using RoomBookingBot.Chatbot.Bots.Dialogs;
-using RoomBookingBot.Chatbot.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
+using RoomBookingBot.Chatbot.Bots.Dialogs.Intents.CheckRoomAvailability;
+using RoomBookingBot.Chatbot.Model;
 
-namespace RoomBookingBot.Chatbot.Dialogs
+namespace RoomBookingBot.Chatbot.Bots.Dialogs
 {
     public class MainDialog : DialogContainer
     {
@@ -30,13 +29,13 @@ namespace RoomBookingBot.Chatbot.Dialogs
                         }
                         else
                         {
-                            var cli = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(LuisModelKey)) {  BaseUri = new Uri(LuisEndpoint) };
+                            var cli = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(LuisModelKey)) {BaseUri = new Uri(LuisEndpoint)};
                             var prediction = await cli.Prediction.ResolveWithHttpMessagesAsync(LuisModelId, dialogInput);
 
                             if (prediction.Body.TopScoringIntent.Intent == "check-room-availability")
                             {
                                 var bookingRequest = prediction.Body.ParseLuisBookingRequest();
-                                var checkRoomAvailabilityDialogArgs = new Dictionary<string,object>{{"bookingRequest", bookingRequest}};
+                                var checkRoomAvailabilityDialogArgs = new Dictionary<string, object> {{"bookingRequest", bookingRequest}};
                                 await dc.Begin(CheckRoomAvailabilityDialog.Id, checkRoomAvailabilityDialogArgs);
                             }
                             else
@@ -62,17 +61,13 @@ namespace RoomBookingBot.Chatbot.Dialogs
 
         private static MainDialog instance { get; set; }
 
-        public static MainDialog GetInstance(IConfiguration configuration)
-        {
-            if (instance == null)
-            {
-                instance = new MainDialog(configuration);
-            }
-            return instance;
-        }
-        
         public string LuisModelId { get; }
         public string LuisModelKey { get; }
         public string LuisEndpoint { get; }
+
+        public static MainDialog GetInstance(IConfiguration configuration)
+        {
+            return instance ?? (instance = new MainDialog(configuration));
+        }
     }
 }

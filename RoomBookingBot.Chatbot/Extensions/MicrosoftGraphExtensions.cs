@@ -1,15 +1,13 @@
-﻿using Microsoft.Graph;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Linq;
+using Microsoft.Graph;
 
-namespace RoomBookingBot.Extensions
+namespace RoomBookingBot.Chatbot.Extensions
 {
     public static class MicrosoftGraphExtensions
     {
-
         public static async Task<IUserPeopleCollectionPage> GetMicrosoftGraphFindMeetingRooms(string accessToken)
         {
             var graphClient = new GraphServiceClient(new PreAuthorizedBearerTokenAuthenticationProvider(accessToken));
@@ -21,49 +19,50 @@ namespace RoomBookingBot.Extensions
         {
             var graphClient = new GraphServiceClient(new PreAuthorizedBearerTokenAuthenticationProvider(accessToken));
 
-            Event createdEvent = await graphClient.Me.Events.Request().AddAsync(new Event
+            var createdEvent = await graphClient.Me.Events.Request().AddAsync(new Event
             {
                 Subject = subject,
-                Location = new Location() { LocationEmailAddress = locationEmailAddress, LocationType = LocationType.ConferenceRoom, DisplayName = locationEmailAddress },
-                Locations = new Location[] { new Location() { LocationEmailAddress = locationEmailAddress, LocationType = LocationType.ConferenceRoom, DisplayName = locationEmailAddress } },
-                Attendees = new Attendee[] { new Attendee() { Type = AttendeeType.Resource, EmailAddress = new EmailAddress() { Address = locationEmailAddress } } },
-                Body =new ItemBody() { Content = "booked by bot" },
-                Start = new DateTimeTimeZone() { TimeZone = "UTC", DateTime = start.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss") },
-                End = new DateTimeTimeZone() { TimeZone = "UTC", DateTime = end.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss") }
+                Location = new Location {LocationEmailAddress = locationEmailAddress, LocationType = LocationType.ConferenceRoom, DisplayName = locationEmailAddress},
+                Locations = new[] {new Location {LocationEmailAddress = locationEmailAddress, LocationType = LocationType.ConferenceRoom, DisplayName = locationEmailAddress}},
+                Attendees = new[] {new Attendee {Type = AttendeeType.Resource, EmailAddress = new EmailAddress {Address = locationEmailAddress}}},
+                Body = new ItemBody {Content = "booked by bot"},
+                Start = new DateTimeTimeZone {TimeZone = "UTC", DateTime = start.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss")},
+                End = new DateTimeTimeZone {TimeZone = "UTC", DateTime = end.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss")}
             });
             return createdEvent.WebLink;
         }
 
         public static async Task<MeetingTimeSuggestionsResult> GetMicrosoftGraphFindMeeting(string accessToken, DateTime from, DateTime to, string meetingDuration, string[] meetingRoomEmailAddresses)
         {
-            var locationConstraintItems = meetingRoomEmailAddresses.Select(meetingRoomEmailAddress => new LocationConstraintItem() { LocationEmailAddress = meetingRoomEmailAddress });
-            var attendeeItems = meetingRoomEmailAddresses.Select(meetingRoomEmailAddress => new Attendee() { EmailAddress = new EmailAddress() { Address = meetingRoomEmailAddress } });
+            var locationConstraintItems = meetingRoomEmailAddresses.Select(meetingRoomEmailAddress => new LocationConstraintItem {LocationEmailAddress = meetingRoomEmailAddress});
+            var attendeeItems = meetingRoomEmailAddresses.Select(meetingRoomEmailAddress => new Attendee {EmailAddress = new EmailAddress {Address = meetingRoomEmailAddress}});
 
             var graphClient = new GraphServiceClient(new PreAuthorizedBearerTokenAuthenticationProvider(accessToken));
 
-            return await graphClient.Me.FindMeetingTimes( 
-                IsOrganizerOptional:true,
+            return await graphClient.Me.FindMeetingTimes(
+                IsOrganizerOptional: true,
                 MinimumAttendeePercentage: 0,
                 Attendees: attendeeItems,
-                LocationConstraint: new LocationConstraint()
+                LocationConstraint: new LocationConstraint
                 {
                     IsRequired = false,
                     Locations = locationConstraintItems
-                }, 
-                TimeConstraint: new TimeConstraint()
+                },
+                TimeConstraint: new TimeConstraint
                 {
-                    Timeslots = new TimeSlot[] {
-                        new TimeSlot()
+                    Timeslots = new[]
+                    {
+                        new TimeSlot
                         {
-                            Start = new DateTimeTimeZone() { DateTime = from.ToString("yyyy-MM-ddTHH:mm:ss"), TimeZone = "UTC" },
-                            End = new DateTimeTimeZone() { DateTime = to.ToString("yyyy-MM-ddTHH:mm:ss"), TimeZone = "UTC" }
+                            Start = new DateTimeTimeZone {DateTime = from.ToString("yyyy-MM-ddTHH:mm:ss"), TimeZone = "UTC"},
+                            End = new DateTimeTimeZone {DateTime = to.ToString("yyyy-MM-ddTHH:mm:ss"), TimeZone = "UTC"}
                         }
                     }
-                }, 
+                },
                 MeetingDuration: new Duration(meetingDuration)).Request().PostAsync();
         }
 
-        class PreAuthorizedBearerTokenAuthenticationProvider : IAuthenticationProvider
+        private class PreAuthorizedBearerTokenAuthenticationProvider : IAuthenticationProvider
         {
             public PreAuthorizedBearerTokenAuthenticationProvider(string accessToken)
             {

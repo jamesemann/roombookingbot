@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using RoomBookingBot.Chatbot.Model;
 
-namespace RoomBookingBot.Chatbot.Bots.Dialogs
+namespace RoomBookingBot.Chatbot.Bots.DialogStateWrappers
 {
     public class SearchGraphDialogStateWrapper
     {
@@ -14,14 +14,8 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
 
         public BookingRequest Booking
         {
-            get
-            {
-                return State["bookingRequest"] as BookingRequest;
-            }
-            set
-            {
-                State["bookingRequest"] = value;
-            }
+            get => State["bookingRequest"] as BookingRequest;
+            set => State["bookingRequest"] = value;
         }
     }
 }

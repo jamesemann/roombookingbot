@@ -1,10 +1,10 @@
-﻿using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 
-namespace RoomBookingBot.Luis.Extensions
+namespace RoomBookingBot.Chatbot.Extensions
 {
     public static class LuisResolutionExtensions
     {
@@ -12,7 +12,7 @@ namespace RoomBookingBot.Luis.Extensions
         {
             if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
             {
-                var resolutionValues = (IEnumerable<dynamic>)resolution.values;
+                var resolutionValues = (IEnumerable<dynamic>) resolution.values;
                 var datetimes = resolutionValues.Select(val => DateTime.Parse(val.value.Value));
 
                 if (datetimes.Count() > 1)
@@ -32,7 +32,7 @@ namespace RoomBookingBot.Luis.Extensions
         {
             if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
             {
-                var resolutionValues = (IEnumerable<dynamic>)resolution.values;
+                var resolutionValues = (IEnumerable<dynamic>) resolution.values;
                 return resolutionValues.Select(room => room).FirstOrDefault();
             }
 
@@ -43,7 +43,7 @@ namespace RoomBookingBot.Luis.Extensions
         {
             if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
             {
-                var resolutionValues = (IEnumerable<dynamic>)resolution.values;
+                var resolutionValues = (IEnumerable<dynamic>) resolution.values;
                 var datetimes = resolutionValues.Select(val => DateTime.Parse(val.value.Value));
 
                 if (datetimes.Count() > 1)
@@ -63,7 +63,7 @@ namespace RoomBookingBot.Luis.Extensions
         {
             if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
             {
-                var resolutionValues = (IEnumerable<dynamic>)resolution.values;
+                var resolutionValues = (IEnumerable<dynamic>) resolution.values;
                 return resolutionValues.FirstOrDefault().timex;
             }
 
@@ -74,8 +74,8 @@ namespace RoomBookingBot.Luis.Extensions
         {
             if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
             {
-                var resolutionValues = (IEnumerable<dynamic>)resolution.values;
-                var datetimeranges = resolutionValues.Select(val => new { start = DateTime.Parse(val.start.Value), end = DateTime.Parse(val.end.Value) });
+                var resolutionValues = (IEnumerable<dynamic>) resolution.values;
+                var datetimeranges = resolutionValues.Select(val => new {start = DateTime.Parse(val.start.Value), end = DateTime.Parse(val.end.Value)});
 
                 if (datetimeranges.Count() > 1)
                 {

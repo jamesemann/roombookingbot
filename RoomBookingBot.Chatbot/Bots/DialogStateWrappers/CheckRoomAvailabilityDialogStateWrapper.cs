@@ -1,7 +1,7 @@
-﻿using RoomBookingBot.Chatbot.Model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using RoomBookingBot.Chatbot.Model;
 
-namespace RoomBookingBot.Chatbot.Bots.Dialogs
+namespace RoomBookingBot.Chatbot.Bots.DialogStateWrappers
 {
     public class CheckRoomAvailabilityDialogStateWrapper
     {
@@ -12,17 +12,10 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
 
         public IDictionary<string, object> State { get; }
 
-
         public BookingRequest Booking
         {
-            get
-            {
-                return (BookingRequest)State["bookingRequest"];
-            }
-            set
-            {
-                State["bookingRequest"] = value;
-            }
+            get => (BookingRequest) State["bookingRequest"];
+            set => State["bookingRequest"] = value;
         }
     }
 }

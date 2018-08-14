@@ -1,10 +1,9 @@
 ﻿using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
-using RoomBookingBot.Chatbot.Model;
-using RoomBookingBot.Luis.Extensions;
+using RoomBookingBot.Chatbot.Extensions;
 
 namespace RoomBookingBot.Chatbot.Model
 {
-    public static partial class LuisModelParser
+    public static class LuisModelParser
     {
         public static BookingRequest ParseLuisBookingRequest(this LuisResult luisResult)
         {
@@ -15,6 +14,7 @@ namespace RoomBookingBot.Chatbot.Model
                 {
                     result.Start = entity.ProcessDateTimeV2Date();
                 }
+
                 if (entity.Type == "builtin.datetimeV2.datetimerange")
                 {
                     (result.Start, result.MeetingDuration) = entity.ProcessDateTimeV2DateTimeRange();
@@ -32,6 +32,7 @@ namespace RoomBookingBot.Chatbot.Model
                     result.Room = entity.ProcessRoom();
                 }
             }
+
             return result;
         }
     }

@@ -1,13 +1,12 @@
-﻿using JamesMann.BotFramework.Middleware.Extensions;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using JamesMann.BotFramework.Middleware.Extensions;
 using Microsoft.Bot;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
-using RoomBookingBot.Chatbot.Dialogs;
-using RoomBookingBot.Chatbot.Extensions;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using RoomBookingBot.Chatbot.Bots.Dialogs;
 
 namespace RoomBookingBot.Chatbot.Bots
 {
