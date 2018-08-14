@@ -4,10 +4,8 @@ using Microsoft.Bot.Builder.Prompts.Choices;
 using Microsoft.Graph;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.DateTime;
-using RoomBookingBot.Chatbot.Extensions;
 using RoomBookingBot.Chatbot.Model;
 using RoomBookingBot.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,10 +30,9 @@ namespace RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability
 
                     if (string.IsNullOrEmpty(bookingRequest.Room))
                     {
-
                         var roomChoices = new List<Choice>();
                         roomChoices.Add(new Choice {Value = "No preference"});
-                        roomChoices.AddRange(from room in bookingRequest.AvailableRooms select new Choice() {Value=room.UserPrincipalName.Split('@')[0] });
+                        roomChoices.AddRange(from room in bookingRequest.AvailableRooms select new Choice() { Value=room.DisplayName });
 
                         await dc.Prompt("choicePrompt", "Do you have a preference which room?", new ChoicePromptOptions
                         {
@@ -55,35 +52,10 @@ namespace RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability
                 }
             });
 
-            Dialogs.Add("textPrompt", new TextPrompt());
             Dialogs.Add("choicePrompt", new ChoicePrompt("en"));
         }
         public static string Id => "disambiguateRoomDialog";
 
         public static DisambiguateRoomDialog Instance = new DisambiguateRoomDialog();
-    }
-
-    // convenience helper to get/set dialog state
-    public class DisambiguateRoomDialogStateWrapper
-    {
-        public DisambiguateRoomDialogStateWrapper(IDictionary<string, object> state)
-        {
-            State = state;
-        }
-
-        public IDictionary<string, object> State { get; }
-
-        public BookingRequest Booking
-        {
-            get
-            {
-                return State["bookingRequest"] as BookingRequest;
-            }
-            set
-            {
-                State["bookingRequest"] = value;
-            }
-        }
-
     }
 }

@@ -17,20 +17,21 @@ namespace RoomBookingBot.Extensions
             return rooms;
         }
 
-        public static async Task BookMicrosoftGraphMeeting(string accessToken, string subject, string locationEmailAddress, DateTime start, DateTime end)
+        public static async Task<string> BookMicrosoftGraphMeeting(string accessToken, string subject, string locationEmailAddress, DateTime start, DateTime end)
         {
             var graphClient = new GraphServiceClient(new PreAuthorizedBearerTokenAuthenticationProvider(accessToken));
 
             Event createdEvent = await graphClient.Me.Events.Request().AddAsync(new Event
             {
                 Subject = subject,
-                Location = new Location() { LocationEmailAddress = locationEmailAddress },
-                //Attendees = attendees,
+                Location = new Location() { LocationEmailAddress = locationEmailAddress, LocationType = LocationType.ConferenceRoom, DisplayName = locationEmailAddress },
+                Locations = new Location[] { new Location() { LocationEmailAddress = locationEmailAddress, LocationType = LocationType.ConferenceRoom, DisplayName = locationEmailAddress } },
+                Attendees = new Attendee[] { new Attendee() { Type = AttendeeType.Resource, EmailAddress = new EmailAddress() { Address = locationEmailAddress } } },
                 Body =new ItemBody() { Content = "booked by bot" },
-                Start = new DateTimeTimeZone() { TimeZone = "UTC", DateTime = start.ToString("yyyy-MM-ddTHH:mm:ss") },
-                End = new DateTimeTimeZone() { TimeZone = "UTC", DateTime = end.ToString("yyyy-MM-ddTHH:mm:ss") }
+                Start = new DateTimeTimeZone() { TimeZone = "UTC", DateTime = start.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss") },
+                End = new DateTimeTimeZone() { TimeZone = "UTC", DateTime = end.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss") }
             });
-
+            return createdEvent.WebLink;
         }
 
         public static async Task<MeetingTimeSuggestionsResult> GetMicrosoftGraphFindMeeting(string accessToken, DateTime from, DateTime to, string meetingDuration, string[] meetingRoomEmailAddresses)

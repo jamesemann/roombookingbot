@@ -1,14 +1,12 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using JamesMann.BotFramework.Dialogs.Date;
+using JamesMann.BotFramework.Dialogs.Time;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Prompts;
-using Microsoft.Recognizers.Text;
 using RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability;
 using RoomBookingBot.Chatbot.Extensions;
 using RoomBookingBot.Chatbot.Model;
 using System;
 using System.Collections.Generic;
-using ChoicePrompt = Microsoft.Bot.Builder.Dialogs.ChoicePrompt;
-using DateTimePrompt = Microsoft.Bot.Builder.Dialogs.DateTimePrompt;
-using TextPrompt = Microsoft.Bot.Builder.Dialogs.TextPrompt;
 
 namespace RoomBookingBot.Chatbot.Bots.Dialogs
 {
@@ -69,20 +67,10 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
                     }
 
                     await dc.Begin(SearchGraphDialog.Id, dc.ActiveDialog.State);
-                },
-                async (dc, args, next) =>
-                {
-                    var stateWrapper = new CheckRoomAvailabilityDialogStateWrapper(dc.ActiveDialog.State);
-                    stateWrapper.Booking = null;
-
-                    await dc.End();
                 }
             });
 
-            Dialogs.Add("dateTimePrompt", new DateTimePrompt("en"));
-            Dialogs.Add("textPrompt", new TextPrompt());
-            Dialogs.Add("numberPrompt", new Microsoft.Bot.Builder.Dialogs.NumberPrompt<int>(Culture.English));
-            Dialogs.Add("choice", new ChoicePrompt(Culture.English));
+            Dialogs.Add("dateTimePrompt", new Microsoft.Bot.Builder.Dialogs.DateTimePrompt("en"));
 
             Dialogs.Add(DisambiguateTimeDialog.Id, DisambiguateTimeDialog.Instance);
             Dialogs.Add(DisambiguateDateDialog.Id, DisambiguateDateDialog.Instance);
@@ -92,28 +80,5 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
 
         public static string Id => "checkRoomAvailabilityDialog";
         public static CheckRoomAvailabilityDialog Instance { get; } = new CheckRoomAvailabilityDialog();
-    }
-
-    public class CheckRoomAvailabilityDialogStateWrapper
-    {
-        public CheckRoomAvailabilityDialogStateWrapper(IDictionary<string, object> state)
-        {
-            State = state;
-        }
-
-        public IDictionary<string, object> State { get; }
-
-
-        public BookingRequest Booking
-        {
-            get
-            {
-                return (BookingRequest)State["bookingRequest"];
-            }
-            set
-            {
-                State["bookingRequest"] = value;
-            }
-        }
     }
 }

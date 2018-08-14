@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using RoomBookingBot.Chatbot.Bots.Dialogs;
 using RoomBookingBot.Chatbot.Model;
@@ -24,42 +25,30 @@ namespace RoomBookingBot.Chatbot.Dialogs
 
                         if (string.IsNullOrEmpty(dialogInput))
                         {
-                            dc.ActiveDialog.State["introduced"] = true;
-                            await dc.Prompt("textPrompt", $"How can I help?");
-                        }
-                        else
-                        {
-                            dc.ActiveDialog.State["utterance"] = dialogInput;
-                            await dc.Continue();
-                        }
-                    },
-                    async (dc, args, next) =>
-                    {
-                        // the utterance could come from either 1) response to prompt in (args["Value"]) or 2) passed into dialog (dc.ActiveDialog.State["utterance"])
-                        var utterance = args != null && args.ContainsKey("Value") ? (string)args["Value"] : (string)dc.ActiveDialog.State["utterance"];
-
-                        var cli = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(LuisModelKey))
-                        {
-                            BaseUri = new Uri(LuisEndpoint)
-                        };
-                        var prediction = await cli.Prediction.ResolveWithHttpMessagesAsync(LuisModelId, utterance);
-
-                        if (prediction.Body.TopScoringIntent.Intent == "check-room-availability")
-                        {
-                            var bookingRequest = prediction.Body.ParseLuisBookingRequest();
-                            var checkRoomAvailabilityDialogArgs = new Dictionary<string,object>{{"bookingRequest", bookingRequest}};
-                            await dc.Begin(CheckRoomAvailabilityDialog.Id, checkRoomAvailabilityDialogArgs);
-                        }
-                        // this is where we could detect other intents, like discover room, show room calendar, etc
-                        else
-                        {
-                            await dc.Context.SendActivity($"Sorry, I don't know what you mean");
+                            await dc.Context.SendActivity($"How can I help?");
                             await dc.End();
                         }
+                        else
+                        {
+                            var cli = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(LuisModelKey)) {  BaseUri = new Uri(LuisEndpoint) };
+                            var prediction = await cli.Prediction.ResolveWithHttpMessagesAsync(LuisModelId, dialogInput);
+
+                            if (prediction.Body.TopScoringIntent.Intent == "check-room-availability")
+                            {
+                                var bookingRequest = prediction.Body.ParseLuisBookingRequest();
+                                var checkRoomAvailabilityDialogArgs = new Dictionary<string,object>{{"bookingRequest", bookingRequest}};
+                                await dc.Begin(CheckRoomAvailabilityDialog.Id, checkRoomAvailabilityDialogArgs);
+                            }
+                            else
+                            {
+                                await dc.Context.SendActivity($"Sorry, I don't know what you mean");
+                                await dc.End();
+                            }
+                        }
                     },
                     async (dc, args, next) =>
                     {
-                        await dc.Prompt("textPrompt", $"Your meeting is booked, let me know if I can help with anything else");
+                        await dc.Prompt("textPrompt", $"Please let me know if I can help with anything else");
                         await dc.End();
                     }
                 }

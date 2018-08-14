@@ -10,13 +10,13 @@ namespace RoomBookingBot.Chatbot.Extensions
 {
     public static class MoreAdaptiveCardsExamples
     {
-        public static void AddAdaptiveCardChoiceForm(this Activity activity, (string text, string value)[] choices)
+        public static void AddAdaptiveCardChoiceForm(this Activity activity, (string text, object value)[] choices)
         {
             activity.Attachments = new List<Attachment>() { CreateChoiceAdaptiveCardAttachment(choices) };
 
         }
 
-        private static Attachment CreateChoiceAdaptiveCardAttachment((string text, string value)[] choices)
+        private static Attachment CreateChoiceAdaptiveCardAttachment((string text, object value)[] choices)
         {
             var choiceItems = new List<dynamic>(choices.Select(choice => new { title = choice.text, value = choice.value }));
             
