@@ -1,0 +1,25 @@
+﻿{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Please select a booking"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "chosenRoom",
+      "style": "expanded",
+      "isMultiSelect": false,
+      "value": "1",
+      "choices": $(choices),
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "OK"
+    }
+  ]
+}

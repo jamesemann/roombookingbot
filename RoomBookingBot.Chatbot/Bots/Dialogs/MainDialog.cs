@@ -2,7 +2,6 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using RoomBookingBot.Chatbot.Bots.Dialogs;
-using RoomBookingBot.Chatbot.Dialogs.CheckRoomAvailability;
 using RoomBookingBot.Chatbot.Model;
 using System;
 using System.Collections.Generic;
@@ -27,10 +26,6 @@ namespace RoomBookingBot.Chatbot.Dialogs
                         {
                             dc.ActiveDialog.State["introduced"] = true;
                             await dc.Prompt("textPrompt", $"How can I help?");
-                        }
-                        else if (dialogInput == "Completed")
-                        {
-                            await dc.Prompt("textPrompt", $"Your meeting is booked, let me know if I can help with anything else");
                         }
                         else
                         {
@@ -59,12 +54,13 @@ namespace RoomBookingBot.Chatbot.Dialogs
                         else
                         {
                             await dc.Context.SendActivity($"Sorry, I don't know what you mean");
+                            await dc.End();
                         }
                     },
                     async (dc, args, next) =>
                     {
-                        dc.ActiveDialog.State["Value"] = "Completed";
-                        await dc.Replace(Id, dc.ActiveDialog.State);
+                        await dc.Prompt("textPrompt", $"Your meeting is booked, let me know if I can help with anything else");
+                        await dc.End();
                     }
                 }
             );

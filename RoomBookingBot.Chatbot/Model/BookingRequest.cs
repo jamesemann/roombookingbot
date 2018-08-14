@@ -13,7 +13,7 @@ namespace RoomBookingBot.Chatbot.Model
         {
             return Start.HasValue && Start.Value.TimeOfDay.Hours >= 9;
         }
-        public string MeetingDuration { get; internal set; }
+        public string MeetingDuration { get; set; }
 
         public Person[] AvailableRooms { get; set; }
 

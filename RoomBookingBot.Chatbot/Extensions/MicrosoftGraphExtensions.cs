@@ -36,14 +36,18 @@ namespace RoomBookingBot.Extensions
         public static async Task<MeetingTimeSuggestionsResult> GetMicrosoftGraphFindMeeting(string accessToken, DateTime from, DateTime to, string meetingDuration, string[] meetingRoomEmailAddresses)
         {
             var locationConstraintItems = meetingRoomEmailAddresses.Select(meetingRoomEmailAddress => new LocationConstraintItem() { LocationEmailAddress = meetingRoomEmailAddress });
+            var attendeeItems = meetingRoomEmailAddresses.Select(meetingRoomEmailAddress => new Attendee() { EmailAddress = new EmailAddress() { Address = meetingRoomEmailAddress } });
 
             var graphClient = new GraphServiceClient(new PreAuthorizedBearerTokenAuthenticationProvider(accessToken));
 
             return await graphClient.Me.FindMeetingTimes( 
+                IsOrganizerOptional:true,
+                MinimumAttendeePercentage: 0,
+                Attendees: attendeeItems,
                 LocationConstraint: new LocationConstraint()
                 {
                     IsRequired = false,
-                    Locations = locationConstraintItems.ToArray()
+                    Locations = locationConstraintItems
                 }, 
                 TimeConstraint: new TimeConstraint()
                 {
