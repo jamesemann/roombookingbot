@@ -17,6 +17,8 @@ namespace RoomBookingBot.Chatbot.Bots
         public Bot(IConfiguration configuration)
         {
             dialogs = new DialogSet();
+
+            // 5. in our Bot, add MainDialog to the top of the stack
             dialogs.Add("mainDialog", MainDialog.GetInstance(configuration));
         }
 
@@ -27,9 +29,11 @@ namespace RoomBookingBot.Chatbot.Bots
                 var state = turnContext.GetConversationState<Dictionary<string, object>>();
                 var dialogCtx = dialogs.CreateContext(turnContext, state);
 
+                // 7. subsequent turns will allow the dialog waterfall to execute
                 await dialogCtx.Continue();
                 if (!turnContext.Responded)
                 {
+                    // 6. on the first turn, begin the MainDialog
                     await dialogCtx.Begin("mainDialog", new Dictionary<string, object>
                     {
                         ["Value"] = turnContext.Activity.Text

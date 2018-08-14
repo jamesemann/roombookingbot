@@ -24,11 +24,13 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
 
                         if (string.IsNullOrEmpty(dialogInput))
                         {
+                            // 8. introduce bot if its the first time a user has visited
                             await dc.Context.SendActivity($"How can I help?");
                             await dc.End();
                         }
                         else
                         {
+                            // 9. otherwise, run NLP in LUIS to start the "Identify" stage
                             var cli = new LUISRuntimeClient(new ApiKeyServiceClientCredentials(LuisModelKey)) {BaseUri = new Uri(LuisEndpoint)};
                             var prediction = await cli.Prediction.ResolveWithHttpMessagesAsync(LuisModelId, dialogInput);
 
@@ -36,6 +38,7 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
                             {
                                 var bookingRequest = prediction.Body.ParseLuisBookingRequest();
                                 var checkRoomAvailabilityDialogArgs = new Dictionary<string, object> {{"bookingRequest", bookingRequest}};
+                                // 10. if the top scoring intent is check-room-availability, then transition into the CheckRoomAvailability dialog
                                 await dc.Begin(CheckRoomAvailabilityDialog.Id, checkRoomAvailabilityDialogArgs);
                             }
                             else

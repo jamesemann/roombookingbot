@@ -17,6 +17,8 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs.Intents.CheckRoomAvailability
     {
         public CheckRoomAvailabilityDialog() : base(Id)
         {
+            // 11. this dialog is mostly the "Disambiguate" stage where we are checking to see if we have a value
+            // for a given field and if not then prompting the user - either with child Dialogs or Prompts
             Dialogs.Add(Id, new WaterfallStep[]
             {
                 async (dc, args, next) =>
@@ -24,6 +26,7 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs.Intents.CheckRoomAvailability
                     var stateWrapper = new CheckRoomAvailabilityDialogStateWrapper(dc.ActiveDialog.State);
                     var bookingRequest = args["bookingRequest"] as BookingRequest;
                     stateWrapper.Booking = bookingRequest;
+                    // 12. so we start by disambiguating the room
                     await dc.Begin(DisambiguateRoomDialog.Id, dc.ActiveDialog.State); 
                 },
                 async (dc, args, next) =>
@@ -34,6 +37,7 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs.Intents.CheckRoomAvailability
                     {
                         bookingRequest.Room = (string) args["Value"];
                     }
+                    // 13. then if necessary disambiguate the date, and so on, until we have all the fields
                     await (!bookingRequest.Start.HasValue ? dc.Begin(DisambiguateDateDialog.Id) : dc.Continue());
                 },
                 async (dc, args, next) =>
@@ -65,6 +69,7 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs.Intents.CheckRoomAvailability
                         var duration = (args["Resolution"] as List<DateTimeResult.DateTimeResolution>).ToTimex();
                         bookingEnquiry.MeetingDuration = duration;
                     }
+                    // 14. finally we transition into SearchGraphDialog which querys Office 365 for availability, and books a meeting if necessary
                     await dc.Begin(SearchGraphDialog.Id, dc.ActiveDialog.State);
                 }
             });

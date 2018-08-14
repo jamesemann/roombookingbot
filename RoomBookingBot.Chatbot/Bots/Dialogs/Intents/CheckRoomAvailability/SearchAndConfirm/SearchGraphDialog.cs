@@ -11,7 +11,6 @@ using Newtonsoft.Json.Linq;
 using RoomBookingBot.Chatbot.Bots.DialogStateWrappers;
 using RoomBookingBot.Chatbot.Extensions;
 using RoomBookingBot.Chatbot.Model;
-using RoomBookingBot.Extensions;
 
 namespace RoomBookingBot.Chatbot.Bots.Dialogs.Intents.CheckRoomAvailability.SearchAndConfirm
 {
@@ -30,6 +29,7 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs.Intents.CheckRoomAvailability.Sear
 
                     var rooms = bookingEnquiry.Room == "No preference" ? (from room in bookingEnquiry.AvailableRooms select room.UserPrincipalName) : new[] {bookingEnquiry.AvailableRooms.FirstOrDefault(x => x.DisplayName == bookingEnquiry.Room).UserPrincipalName};
 
+                    // 15. query Office 365 Graph for availability
                     var meetings = await MicrosoftGraphExtensions.GetMicrosoftGraphFindMeeting(
                         dc.Context.Services.Get<ConversationAuthToken>(AzureAdAuthMiddleware.AUTH_TOKEN_KEY).AccessToken,
                         bookingEnquiry.Start.Value,
@@ -55,6 +55,7 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs.Intents.CheckRoomAvailability.Sear
                     }
                     else
                     {
+                        // 16. Present the choices back to the user as an adaptive card (see adaptivecards.io)
                         var activity = dc.Context.Activity.CreateReply();
                         activity.AddAdaptiveCardChoiceForm(bookingChoices.ToArray());
                         await dc.Context.SendActivity(activity);
@@ -65,10 +66,12 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs.Intents.CheckRoomAvailability.Sear
                     if (args["Activity"] is Activity activity && activity.Value != null && ((dynamic) activity.Value).chosenRoom is JValue chosenRoom)
                     {
                         dynamic requestedBooking = JsonConvert.DeserializeObject<ExpandoObject>((string) chosenRoom.Value);
+                        // 17. Finally book the meeting
                         var meetingWebLink = await MicrosoftGraphExtensions.BookMicrosoftGraphMeeting(dc.Context.Services.Get<ConversationAuthToken>(AzureAdAuthMiddleware.AUTH_TOKEN_KEY).AccessToken,
                             "Booked meeting", requestedBooking.roomEmail, requestedBooking.start, requestedBooking.end);
 
                         var confirmation = activity.CreateReply();
+                        // 18. And send back a confirmation card
                         CardExtensions.AddAdaptiveCardRoomConfirmationAttachment(confirmation, requestedBooking.roomEmail, $"{requestedBooking.start.DayOfWeek} {requestedBooking.start.ToString("HH:mm")}", $"{requestedBooking.start.DayOfWeek} {requestedBooking.end.ToString("HH:mm")}", meetingWebLink);
                         await dc.Context.SendActivity(confirmation);
                         await dc.End();
