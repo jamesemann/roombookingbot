@@ -59,6 +59,17 @@ namespace RoomBookingBot.Luis.Extensions
             throw new Exception("ProcessDateTimeV2DateTime");
         }
 
+        public static string ProcessDateTimeV2Duration(this EntityModel entity)
+        {
+            if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
+            {
+                var resolutionValues = (IEnumerable<dynamic>)resolution.values;
+                return resolutionValues.FirstOrDefault().timex;
+            }
+
+            throw new Exception("ProcessDateTimeV2Duration");
+        }
+
         public static (DateTime start, string timespan) ProcessDateTimeV2DateTimeRange(this EntityModel entity)
         {
             if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))

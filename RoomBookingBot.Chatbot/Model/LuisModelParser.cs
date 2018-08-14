@@ -23,6 +23,10 @@ namespace RoomBookingBot.Chatbot.Model
                 {
                     result.Start = entity.ProcessDateTimeV2DateTime();
                 }
+                else if (entity.Type == "builtin.datetimeV2.duration")
+                {
+                    result.MeetingDuration = entity.ProcessDateTimeV2Duration();
+                }
                 else if (entity.Type == "Room")
                 {
                     result.Room = entity.ProcessRoom();
