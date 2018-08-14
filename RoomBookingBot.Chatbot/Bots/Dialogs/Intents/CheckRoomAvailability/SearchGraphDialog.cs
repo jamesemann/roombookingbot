@@ -41,7 +41,7 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
                     foreach (var suggestion in meetings.MeetingTimeSuggestions)
                     {
                         foreach(var location in suggestion.Locations){
-                        var display = $"{bookingEnquiry.AvailableRooms.FirstOrDefault(x=>x.UserPrincipalName.ToLower() == location.LocationEmailAddress.ToLower()).DisplayName}: {DateTime.Parse(suggestion.MeetingTimeSlot.Start.DateTime).ToString("hh:mm")} - {DateTime.Parse(suggestion.MeetingTimeSlot.End.DateTime).ToString("hh:mm")}";
+                        var display = $"{bookingEnquiry.AvailableRooms.FirstOrDefault(x=>x.UserPrincipalName.ToLower() == location.LocationEmailAddress.ToLower()).DisplayName}: {DateTime.Parse(suggestion.MeetingTimeSlot.Start.DateTime).DayOfWeek} {DateTime.Parse(suggestion.MeetingTimeSlot.Start.DateTime).ToString("HH:mm")} - {DateTime.Parse(suggestion.MeetingTimeSlot.End.DateTime).ToString("HH:mm")}";
                         var value = new { start = DateTime.Parse(suggestion.MeetingTimeSlot.Start.DateTime), end = DateTime.Parse(suggestion.MeetingTimeSlot.End.DateTime),  roomEmail = location.LocationEmailAddress };
                         bookingChoices.Add((display,JsonConvert.SerializeObject( value )));
                             }
@@ -68,7 +68,7 @@ namespace RoomBookingBot.Chatbot.Bots.Dialogs
                        "Booked meeting", requestedBooking.roomEmail, requestedBooking.start, requestedBooking.end);
 
                         var confirmation = activity.CreateReply();
-                        CardExtensions.AddAdaptiveCardRoomConfirmationAttachment(confirmation, requestedBooking.roomEmail, requestedBooking.start.ToString("dd-MMM-yy HH:mm"), requestedBooking.end.ToString("dd-MMM-yy HH:mm"), meetingWebLink);
+                        CardExtensions.AddAdaptiveCardRoomConfirmationAttachment(confirmation, requestedBooking.roomEmail, $"{requestedBooking.start.DayOfWeek} {requestedBooking.start.ToString("HH:mm")}", $"{requestedBooking.start.DayOfWeek} {requestedBooking.end.ToString("HH:mm")}", meetingWebLink);
                         await dc.Context.SendActivity(confirmation);
                         await dc.End();
                     }
