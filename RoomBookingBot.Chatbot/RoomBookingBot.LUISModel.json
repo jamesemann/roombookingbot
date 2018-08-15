@@ -1,0 +1,120 @@
+{
+  "luis_schema_version": "3.0.0",
+  "versionId": "0.1",
+  "name": "RoomBookingBot",
+  "desc": "",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "check-room-availability"
+    },
+    {
+      "name": "discover-rooms"
+    },
+    {
+      "name": "None"
+    }
+  ],
+  "entities": [],
+  "composites": [],
+  "closedLists": [
+    {
+      "name": "Room",
+      "subLists": [
+        {
+          "canonicalForm": "Boardroom",
+          "list": [
+            "Board room"
+          ]
+        },
+        {
+          "canonicalForm": "Auditorium",
+          "list": [
+            "Theatre",
+            "Presentation room",
+            "Presenting room"
+          ]
+        }
+      ],
+      "roles": []
+    }
+  ],
+  "patternAnyEntities": [],
+  "regex_entities": [],
+  "prebuiltEntities": [
+    {
+      "name": "datetimeV2",
+      "roles": []
+    }
+  ],
+  "model_features": [],
+  "regex_features": [],
+  "patterns": [],
+  "utterances": [
+    {
+      "text": "can i book boardroom",
+      "intent": "check-room-availability",
+      "entities": []
+    },
+    {
+      "text": "can i have a meeting in the boardroom",
+      "intent": "check-room-availability",
+      "entities": []
+    },
+    {
+      "text": "id like to book out the auditorium",
+      "intent": "check-room-availability",
+      "entities": []
+    },
+    {
+      "text": "id like to book the auditorium for 60 minutes tomorrow",
+      "intent": "check-room-availability",
+      "entities": []
+    },
+    {
+      "text": "is boardroom free",
+      "intent": "check-room-availability",
+      "entities": []
+    },
+    {
+      "text": "is the board room free in an hour",
+      "intent": "check-room-availability",
+      "entities": []
+    },
+    {
+      "text": "is the boardroom free between 2 and 3 today",
+      "intent": "check-room-availability",
+      "entities": []
+    },
+    {
+      "text": "tell me about available rooms",
+      "intent": "discover-rooms",
+      "entities": []
+    },
+    {
+      "text": "tell me about meeting rooms",
+      "intent": "discover-rooms",
+      "entities": []
+    },
+    {
+      "text": "where are meeting rooms",
+      "intent": "discover-rooms",
+      "entities": []
+    },
+    {
+      "text": "where can i have a meeting?",
+      "intent": "discover-rooms",
+      "entities": []
+    },
+    {
+      "text": "which rooms are available?",
+      "intent": "discover-rooms",
+      "entities": []
+    },
+    {
+      "text": "which rooms can i have a meeting in",
+      "intent": "discover-rooms",
+      "entities": []
+    }
+  ]
+}
