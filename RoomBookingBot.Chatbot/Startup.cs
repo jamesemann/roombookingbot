@@ -28,9 +28,9 @@ namespace RoomBookingBot.Chatbot
 
             // do not use in memory storage for production!
             // for more information see https://github.com/jamesemann/JamesMann.BotFramework
-            var stateManager = new InMemoryAuthTokenStorage(); 
+            var authTokenStorage = new InMemoryAuthTokenStorage(); 
             
-            services.AddSingleton<IAuthTokenStorage>(stateManager);
+            services.AddSingleton<IAuthTokenStorage>(authTokenStorage);
             
             services.AddBot<Bot>((options) => {
                 options.CredentialProvider = new ConfigurationCredentialProvider(Configuration);
@@ -39,7 +39,7 @@ namespace RoomBookingBot.Chatbot
                 options.Middleware.Add(new TypingMiddleware());
 
                 // 2. add azure ad auth middleware to get an authorization token to use to connect to Office 365 Graph
-                options.Middleware.Add(new AzureAdAuthMiddleware(stateManager, Configuration));
+                options.Middleware.Add(new AzureAdAuthMiddleware(authTokenStorage, Configuration));
 
                 // 3. add conversation state so that we can use Dialogs
                 options.Middleware.Add(new ConversationState<Dictionary<string, object>>(new MemoryStorage()));

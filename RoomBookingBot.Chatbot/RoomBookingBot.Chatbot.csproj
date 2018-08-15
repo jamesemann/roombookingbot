@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="JamesMann.BotFramework.Dialogs" Version="1.0.1" />
-    <PackageReference Include="JamesMann.BotFramework.Middleware" Version="1.0.6" />
+    <PackageReference Include="JamesMann.BotFramework.Dialogs" Version="1.1.2018815.1" />
+    <PackageReference Include="JamesMann.BotFramework.Middleware" Version="1.1.2018815.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime" Version="1.0.0" />
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.SpellCheck" Version="3.0.0" />
